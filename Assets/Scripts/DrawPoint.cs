@@ -13,13 +13,10 @@ public class DrawPoint : MonoBehaviour
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out hit)) {
-                Transform objectHit = hit.transform;
-                
-                Debug.Log(objectHit.name);
-                
-                hitPoints.Add(hit.point);
-            }
+            if (!Physics.Raycast(ray, out hit)) return;
+            Transform objectHit = hit.transform;
+            
+            hitPoints.Add(hit.point);
         }
     }
 }
