@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,9 @@ public class DrawLine : MonoBehaviour
 
     public List<Vector3> fingerPosition;
     private Camera _camera;
+
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private MoveObject[] moveObjects;
 
     private void Start()
     {
@@ -28,7 +32,7 @@ public class DrawLine : MonoBehaviour
         {
             Vector3 tempFingerPos = RayToTouch();
 
-            if (Vector3.Distance(tempFingerPos, fingerPosition[fingerPosition.Count - 1]) > 0.1f)
+            if (Vector3.Distance(tempFingerPos, fingerPosition[fingerPosition.Count - 1]) > 0.5f)
             {
                 UpdateLine(tempFingerPos);
             }
@@ -37,6 +41,10 @@ public class DrawLine : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             Destroy(currentLine);
+            //Instantiate(bullet);
+            //bullet.GetComponent<Bullet>().isMove = true;
+
+            StartCoroutine(ThrowBullet());
         }
     }
 
@@ -70,11 +78,21 @@ public class DrawLine : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit raycastHit))
         {
             
-            return new Vector3(raycastHit.point.x, raycastHit.point.y + 0.5f, raycastHit.point.z);
+            return new Vector3(raycastHit.point.x, raycastHit.point.y + .5f, raycastHit.point.z);
         }
         else
         {
             return Vector3.zero;
+        }
+    }
+
+    public IEnumerator ThrowBullet()
+    {
+        foreach (var moveObject in moveObjects)
+        {
+            moveObject.gameObject.SetActive(true);
+            moveObject.isMove = true;
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }
