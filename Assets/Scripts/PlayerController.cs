@@ -9,12 +9,15 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Finish"))
         {
-            Debug.Log("Finish");
+            GameManager.Instance.Win();
         }
+    }
 
-        if (other.CompareTag("Enemy"))
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("Lose");
+            GameManager.Instance.Fail();
         }
     }
 }

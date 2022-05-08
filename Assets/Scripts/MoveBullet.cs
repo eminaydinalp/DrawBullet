@@ -5,42 +5,51 @@ using UnityEngine;
 
 public class MoveBullet : MonoBehaviour
 {
-    public bool isMove;
+    [SerializeField] private DrawLine drawLine;
     [SerializeField] private Transform firstPosition;
     [SerializeField] private float objectSpeed;
-    private Vector3 _nextPos;
-    private int _nextPosIndex;
-
-    [SerializeField] private DrawLine drawLine;
     
+    private Rigidbody _rigidbody;
+    private Vector3 _nextPos;
+
+    public bool isMove;
+    private int _nextPosIndex;
+    
+    private void Awake()
+    {
+        _rigidbody = GetComponent<Rigidbody>();
+    }
+
     private void OnEnable()
     {
         _nextPos = firstPosition.position;
     }
-    private void Update()
+
+    private void FixedUpdate()
     {
-        if(isMove) Move();
+        if (isMove) Move();
     }
 
     void Move()
     {
-        if (transform.position == _nextPos)
+        _nextPosIndex++;
+        if (_nextPosIndex >= drawLine.fingerPosition.Count)
         {
-            _nextPosIndex++;
-            if (_nextPosIndex >= drawLine.fingerPosition.Count)
-            {
-                _nextPosIndex = 0;
-                isMove = false;
-                gameObject.SetActive(false);
-                transform.position = firstPosition.position;
-            }
-            _nextPos = new Vector3(drawLine.fingerPosition[_nextPosIndex].x,
-                firstPosition.position.y, drawLine.fingerPosition[_nextPosIndex].z);
+            _nextPosIndex = 0;
+            isMove = false;
+            _rigidbody.velocity = Vector3.zero;
+            gameObject.SetActive(false);
+            transform.position = firstPosition.position;
         }
-        else
-        {
-            transform.position = 
-                Vector3.MoveTowards(transform.position, _nextPos, objectSpeed * Time.deltaTime);
-        }
+
+        _nextPos = new Vector3(drawLine.fingerPosition[_nextPosIndex].x,
+            firstPosition.position.y, drawLine.fingerPosition[_nextPosIndex].z);
+
+        Vector3 direction = _nextPos - transform.position;
+        
+        direction.Normalize();
+
+        _rigidbody.AddForce(direction * (objectSpeed * Time.deltaTime), ForceMode.Impulse);
     }
+    
 }

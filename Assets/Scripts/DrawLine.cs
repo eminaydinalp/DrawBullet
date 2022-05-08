@@ -23,14 +23,16 @@ public class DrawLine : MonoBehaviour
 
     private void Update()
     {
+        #region Standalone Inputs
+
         if (Input.GetMouseButtonDown(0))
         {
-            CreateLine();
+            CreateLine(Input.mousePosition);
         }
 
         if (Input.GetMouseButton(0))
         {
-            Vector3 tempFingerPos = RayToTouch();
+            Vector3 tempFingerPos = RayToTouch(Input.mousePosition);
 
             if (Vector3.Distance(tempFingerPos, fingerPosition[fingerPosition.Count - 1]) > 0.1f)
             {
@@ -41,22 +43,52 @@ public class DrawLine : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             Destroy(currentLine);
-            //Instantiate(bullet);
-            //bullet.GetComponent<Bullet>().isMove = true;
-
             StartCoroutine(ThrowBullet());
         }
+
+        #endregion
+
+        #region Mobile Input
+
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                CreateLine(touch.position);
+            }
+
+            if (touch.phase == TouchPhase.Moved)
+            {
+                Vector3 tempFingerPos = RayToTouch(touch.position);
+
+                if (Vector3.Distance(tempFingerPos, fingerPosition[fingerPosition.Count - 1]) > 0.1f)
+                {
+                    UpdateLine(tempFingerPos);
+                }
+            }
+
+            if (touch.phase == TouchPhase.Ended)
+            {
+                Destroy(currentLine);
+                StartCoroutine(ThrowBullet());
+            }
+        }
+
+        #endregion
+        
     }
 
-    public void CreateLine()
+    public void CreateLine(Vector3 touchPosition)
     {
         currentLine = Instantiate(linePrefab, Vector3.zero, Quaternion.identity);
         lineRenderer = currentLine.GetComponent<LineRenderer>();
         
         fingerPosition.Clear();
         
-        fingerPosition.Add(RayToTouch());
-        fingerPosition.Add(RayToTouch());
+        fingerPosition.Add(RayToTouch(touchPosition));
+        fingerPosition.Add(RayToTouch(touchPosition));
 
         lineRenderer.SetPosition(0, fingerPosition[0]);
         lineRenderer.SetPosition(1, fingerPosition[1]);
@@ -71,10 +103,10 @@ public class DrawLine : MonoBehaviour
     }
 
 
-    public Vector3 RayToTouch()
+    public Vector3 RayToTouch(Vector3 touchPosition)
     {
-        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-
+        Ray ray = _camera.ScreenPointToRay(touchPosition);
+        
         if (Physics.Raycast(ray, out RaycastHit raycastHit))
         {
             
@@ -91,6 +123,7 @@ public class DrawLine : MonoBehaviour
         foreach (var moveObject in moveObjects)
         {
             moveObject.gameObject.SetActive(true);
+            //moveObject.MooveBullet();
             moveObject.isMove = true;
             yield return new WaitForSeconds(0.1f);
         }
