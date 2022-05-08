@@ -14,7 +14,7 @@ public class DrawLine : MonoBehaviour
     private Camera _camera;
 
     [SerializeField] private GameObject bullet;
-    [SerializeField] private MoveObject[] moveObjects;
+    [SerializeField] private MoveBullet[] moveObjects;
 
     private void Start()
     {
@@ -32,7 +32,7 @@ public class DrawLine : MonoBehaviour
         {
             Vector3 tempFingerPos = RayToTouch();
 
-            if (Vector3.Distance(tempFingerPos, fingerPosition[fingerPosition.Count - 1]) > 0.5f)
+            if (Vector3.Distance(tempFingerPos, fingerPosition[fingerPosition.Count - 1]) > 0.1f)
             {
                 UpdateLine(tempFingerPos);
             }

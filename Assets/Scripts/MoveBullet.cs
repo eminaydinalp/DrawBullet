@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveObject : MonoBehaviour
+public class MoveBullet : MonoBehaviour
 {
     public bool isMove;
-    [SerializeField] private Vector3 firstPosition;
+    [SerializeField] private Transform firstPosition;
     [SerializeField] private float objectSpeed;
     private Vector3 _nextPos;
     private int _nextPosIndex;
@@ -15,7 +15,7 @@ public class MoveObject : MonoBehaviour
     
     private void OnEnable()
     {
-        _nextPos = firstPosition;
+        _nextPos = firstPosition.position;
     }
     private void Update()
     {
@@ -32,10 +32,10 @@ public class MoveObject : MonoBehaviour
                 _nextPosIndex = 0;
                 isMove = false;
                 gameObject.SetActive(false);
-                transform.position = firstPosition;
+                transform.position = firstPosition.position;
             }
             _nextPos = new Vector3(drawLine.fingerPosition[_nextPosIndex].x,
-                drawLine.fingerPosition[_nextPosIndex].y + 1f, drawLine.fingerPosition[_nextPosIndex].z);
+                firstPosition.position.y, drawLine.fingerPosition[_nextPosIndex].z);
         }
         else
         {
