@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public GameObject confetti, levelPassed, gameOver, ingamesScreen;
+    public GameObject confetti, levelPassed, gameOver, ingamesScreen, startPanel;
     public bool isFinish;
     
     private void Awake()
@@ -19,13 +19,13 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && !isFinish)
         {
+            startPanel.SetActive(false);
             ingamesScreen.SetActive(true);
         }
     }
 
     public void Restart()
     {
-        Debug.Log("restrat");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         Time.timeScale = 1;
     }

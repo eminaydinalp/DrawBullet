@@ -11,9 +11,12 @@ public class DrawLine : MonoBehaviour
     public LineRenderer lineRenderer;
 
     public List<Vector3> fingerPosition;
+    
     private Camera _camera;
-
-    [SerializeField] private GameObject bullet;
+    private float _time;
+    private bool _isDown;
+    
+    [SerializeField] private float reloadTime;
     [SerializeField] private MoveBullet[] moveObjects;
 
     private void Start()
@@ -23,15 +26,19 @@ public class DrawLine : MonoBehaviour
 
     private void Update()
     {
+        _time += Time.deltaTime;
+        
         #region Standalone Inputs
 
         if (Input.GetMouseButtonDown(0))
         {
+            _isDown = true;
             CreateLine(Input.mousePosition);
         }
 
         if (Input.GetMouseButton(0))
         {
+            if(!_isDown) return;
             Vector3 tempFingerPos = RayToTouch(Input.mousePosition);
 
             if (Vector3.Distance(tempFingerPos, fingerPosition[fingerPosition.Count - 1]) > 0.1f)
@@ -42,6 +49,7 @@ public class DrawLine : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
+            if(!_isDown) return;
             Destroy(currentLine);
             StartCoroutine(ThrowBullet());
         }
@@ -72,6 +80,7 @@ public class DrawLine : MonoBehaviour
             if (touch.phase == TouchPhase.Ended)
             {
                 Destroy(currentLine);
+                Destroy(FindObjectOfType<LineRenderer>().gameObject);
                 StartCoroutine(ThrowBullet());
             }
         }
@@ -120,12 +129,17 @@ public class DrawLine : MonoBehaviour
 
     public IEnumerator ThrowBullet()
     {
-        foreach (var moveObject in moveObjects)
+        if (_time > reloadTime)
         {
-            moveObject.gameObject.SetActive(true);
-            //moveObject.MooveBullet();
-            moveObject.isMove = true;
-            yield return new WaitForSeconds(0.1f);
+            foreach (var moveObject in moveObjects)
+            {
+                moveObject.gameObject.SetActive(true);
+                //moveObject.MooveBullet();
+                moveObject.isMove = true;
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            _time = 0;
         }
     }
 }
